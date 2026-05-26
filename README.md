@@ -8,6 +8,10 @@ GitHub Pages serves from `docs/`:
 
 https://dongdongsmall.github.io/arsenal-editorial-hub/
 
+Taste-skill second version:
+
+https://dongdongsmall.github.io/arsenal-editorial-hub/taste/
+
 ## Local preview
 
 ```bash
@@ -25,6 +29,7 @@ http://localhost:4173/
 
 ```bash
 node scripts/verify-site.mjs
+node scripts/verify-taste-site.mjs
 ```
 
 The verifier checks the longform homepage structure, responsive metadata, champion facts, official source links, visual-system classes, mobile CSS, and updated search data.
