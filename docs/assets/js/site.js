@@ -1,179 +1,148 @@
 (() => {
-  const doc = document.documentElement;
-  const storedTheme = localStorage.getItem("arsenal-theme");
-  if (storedTheme) {
-    doc.setAttribute("data-theme", storedTheme);
+  const root = document.documentElement;
+  const header = document.querySelector("[data-header]");
+  const themeToggle = document.querySelector("[data-theme-toggle]");
+  const savedTheme = localStorage.getItem("arsenal-champions-theme");
+
+  if (savedTheme === "night") {
+    root.setAttribute("data-theme", "night");
+    themeToggle?.setAttribute("aria-pressed", "true");
   }
 
-  const toggle = document.querySelector("[data-theme-toggle]");
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      const current = doc.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      doc.setAttribute("data-theme", current);
-      localStorage.setItem("arsenal-theme", current);
-      toggle.setAttribute("aria-pressed", current === "dark" ? "true" : "false");
-    });
+  themeToggle?.addEventListener("click", () => {
+    const next = root.getAttribute("data-theme") === "night" ? "day" : "night";
+    if (next === "night") {
+      root.setAttribute("data-theme", "night");
+      localStorage.setItem("arsenal-champions-theme", "night");
+      themeToggle.setAttribute("aria-pressed", "true");
+    } else {
+      root.removeAttribute("data-theme");
+      localStorage.setItem("arsenal-champions-theme", "day");
+      themeToggle.setAttribute("aria-pressed", "false");
+    }
+  });
+
+  const updateHeader = () => {
+    if (!header) return;
+    header.classList.toggle("is-solid", window.scrollY > 80);
+  };
+
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
+
+  const revealItems = document.querySelectorAll(
+    ".chapter, .metric-card, .person-card, .keyword-grid article, .timeline li"
+  );
+  revealItems.forEach((item) => item.classList.add("reveal"));
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    revealItems.forEach((item) => observer.observe(item));
+  } else {
+    revealItems.forEach((item) => item.classList.add("is-visible"));
   }
 
-  const searchOverlay = document.querySelector(".search-overlay");
-  const searchOpeners = document.querySelectorAll("[data-search-open]");
-  const searchClose = document.querySelector("[data-search-close]");
+  const overlay = document.querySelector("[data-search-overlay]");
+  const openSearchButtons = document.querySelectorAll("[data-search-open]");
+  const closeSearchButton = document.querySelector("[data-search-close]");
   const searchInput = document.querySelector(".search-input");
-  const resultsEl = document.querySelector(".search-results");
+  const searchResults = document.querySelector("[data-search-results]");
 
   const searchIndex = [
     {
-      title: "Arteta: Control the Game in Phases",
-      url: "article-arteta-presser.html",
-      section: "News Hub · Press Conference",
-      snippet: "Arteta highlights emotional control, five-lane spacing, and protecting the box.",
-      tags: ["press", "arteta", "tactical"]
+      title: "阿森纳 2025/26 英超冠军",
+      href: "#top",
+      desc: "85 分收官，7 分领先曼城，二十二年后再次赢得英超。"
     },
     {
-      title: "League Cup Semi: Arsenal 2-0 Chelsea",
-      url: "article-cup-win.html",
-      section: "News Hub · Reports",
-      snippet: "Disciplined mid-block, set-piece leverage, and standout performances seal the win.",
-      tags: ["report", "league cup", "chelsea"]
+      title: "赛季主线",
+      href: "#chapter-season",
+      desc: "从连续三季亚军到冠军，阿尔特塔把接近变成抵达。"
     },
     {
-      title: "Next Fixture: Sunderland Preview",
-      url: "match-sunderland.html",
-      section: "Match Center · Previews",
-      snippet: "Rotation considerations, press triggers, and match tempo targets.",
-      tags: ["preview", "sunderland", "fixture"]
+      title: "最终积分",
+      href: "#chapter-table",
+      desc: "阿森纳 85 分，曼城 78 分，冠军优势为 7 分。"
     },
     {
-      title: "Standings Snapshot",
-      url: "match-standings.html",
-      section: "Match Center · Standings",
-      snippet: "Points gap analysis and form trend line for the top four.",
-      tags: ["table", "standings", "snapshot"]
+      title: "David Raya",
+      href: "#chapter-people",
+      desc: "Raya 以 19 场零封获得 2025/26 英超金手套。"
     },
     {
-      title: "Squad: Player Detail - Bukayo Saka",
-      url: "player-saka.html",
-      section: "Squad · First Team",
-      snippet: "Role profile, key traits, and tactical usage map.",
-      tags: ["player", "saka"]
+      title: "Mikel Arteta",
+      href: "#chapter-people",
+      desc: "阿尔特塔带领阿森纳结束 22 年英超冠军等待。"
     },
     {
-      title: "Squad: Player Detail - Martin Odegaard",
-      url: "player-odegaard.html",
-      section: "Squad · First Team",
-      snippet: "Creative hub, press leadership, and passing lanes.",
-      tags: ["player", "odegaard"]
+      title: "2003/04 与 2025/26",
+      href: "#chapter-tactics",
+      desc: "不败赛季的影子仍在，但 2026 是另一代人的冠军。"
     },
     {
-      title: "Club: Community Impact",
-      url: "club-community.html",
-      section: "Club · Community",
-      snippet: "示例内容: grassroots coaching, education programs, and social initiatives.",
-      tags: ["club", "community"]
-    },
-    {
-      title: "News: Transfer Desk",
-      url: "news-transfers.html",
-      section: "News Hub · Transfers",
-      snippet: "示例内容: roster balance, scouting reports, and window priorities.",
-      tags: ["transfers", "news"]
-    },
-    {
-      title: "Match Center: Fixtures",
-      url: "match-fixtures.html",
-      section: "Match Center · Fixtures",
-      snippet: "Upcoming fixtures with key tactical hooks and broadcast notes.",
-      tags: ["fixtures"]
+      title: "官方来源",
+      href: "#chapter-sources",
+      desc: "英超官方冠军确认、赛季总结、捧杯日说明与 Unsplash 图片来源。"
     }
   ];
 
-  const openSearch = () => {
-    if (!searchOverlay) return;
-    searchOverlay.classList.add("active");
-    searchOverlay.setAttribute("aria-hidden", "false");
-    if (searchInput) {
-      searchInput.value = "";
-      renderResults(searchIndex);
-      searchInput.focus();
-    }
-  };
-
-  const closeSearch = () => {
-    if (!searchOverlay) return;
-    searchOverlay.classList.remove("active");
-    searchOverlay.setAttribute("aria-hidden", "true");
-  };
-
   const renderResults = (items) => {
-    if (!resultsEl) return;
-    resultsEl.innerHTML = "";
-    if (!items.length) {
-      const empty = document.createElement("div");
-      empty.className = "notice";
-      empty.textContent = "No matches. Try a broader term.";
-      resultsEl.appendChild(empty);
-      return;
-    }
+    if (!searchResults) return;
+    searchResults.innerHTML = "";
     items.forEach((item) => {
       const link = document.createElement("a");
       link.className = "search-result";
-      link.href = item.url;
-      link.innerHTML = `<strong>${item.title}</strong><small>${item.section}</small><span>${item.snippet}</span>`;
-      resultsEl.appendChild(link);
+      link.href = item.href;
+      link.innerHTML = `<strong>${item.title}</strong><small>${item.desc}</small>`;
+      link.addEventListener("click", closeSearch);
+      searchResults.appendChild(link);
     });
   };
 
-  searchOpeners.forEach((btn) => btn.addEventListener("click", openSearch));
-  if (searchClose) searchClose.addEventListener("click", closeSearch);
-  if (searchOverlay) {
-    searchOverlay.addEventListener("click", (event) => {
-      if (event.target === searchOverlay) closeSearch();
-    });
+  function openSearch() {
+    if (!overlay || !searchInput) return;
+    overlay.classList.add("active");
+    overlay.setAttribute("aria-hidden", "false");
+    searchInput.value = "";
+    renderResults(searchIndex);
+    searchInput.focus();
   }
 
-  if (searchInput) {
-    searchInput.addEventListener("input", (event) => {
-      const term = event.target.value.toLowerCase().trim();
-      const results = searchIndex.filter((item) => {
-        return (
-          item.title.toLowerCase().includes(term) ||
-          item.section.toLowerCase().includes(term) ||
-          item.snippet.toLowerCase().includes(term) ||
-          item.tags.some((tag) => tag.toLowerCase().includes(term))
-        );
-      });
-      renderResults(term ? results : searchIndex);
-    });
+  function closeSearch() {
+    if (!overlay) return;
+    overlay.classList.remove("active");
+    overlay.setAttribute("aria-hidden", "true");
   }
 
-  const page = document.body.getAttribute("data-page");
-  if (page) {
-    document.querySelectorAll(`.bottom-nav a[data-page="${page}"]`).forEach((link) => {
-      link.classList.add("active");
-    });
-  }
-
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.body.classList.add("is-loading");
-  window.addEventListener("load", () => {
-    document.body.classList.remove("is-loading");
-    document.body.classList.add("is-loaded");
+  openSearchButtons.forEach((button) => button.addEventListener("click", openSearch));
+  closeSearchButton?.addEventListener("click", closeSearch);
+  overlay?.addEventListener("click", (event) => {
+    if (event.target === overlay) closeSearch();
   });
 
-  if (!prefersReduced) {
-    document.querySelectorAll("a[href]").forEach((anchor) => {
-      const href = anchor.getAttribute("href");
-      if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) {
-        return;
-      }
-      anchor.addEventListener("click", (event) => {
-        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        event.preventDefault();
-        document.body.classList.add("is-leaving");
-        setTimeout(() => {
-          window.location.href = href;
-        }, 220);
-      });
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeSearch();
+  });
+
+  searchInput?.addEventListener("input", (event) => {
+    const term = event.target.value.trim().toLowerCase();
+    if (!term) {
+      renderResults(searchIndex);
+      return;
+    }
+    const results = searchIndex.filter((item) => {
+      return `${item.title} ${item.desc}`.toLowerCase().includes(term);
     });
-  }
+    renderResults(results);
+  });
 })();

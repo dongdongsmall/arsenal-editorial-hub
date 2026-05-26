@@ -1,18 +1,38 @@
-# Arsenal Editorial Hub (Static)
+# Arsenal 2025/26 Champions Longform Site
 
-A premium, mobile-first, offline-ready static site with a four-level information architecture:
-- Level 1: Home (pages/index.html)
-- Level 2: Sections (News Hub, Squad, Match Center, Club)
-- Level 3: Category pages
-- Level 4: Detail pages
+Static GitHub Pages site for a non-official Arsenal 2025/26 Premier League title celebration.
 
-## How to view locally
-1. Open `pages/index.html` directly in a browser.
-2. Optional: run a local server if preferred:
-   - `python3 -m http.server` from the project root
-   - Navigate to `http://localhost:8000/pages/index.html`
+## Live page
 
-## Notes
-- No external fonts, images, or CDNs are used.
-- Dark mode toggle is stored in `localStorage`.
-- Content labeled “示例内容” is fictional placeholder text.
+GitHub Pages serves from `docs/`:
+
+https://dongdongsmall.github.io/arsenal-editorial-hub/
+
+## Local preview
+
+```bash
+cd docs
+python3 -m http.server 4173
+```
+
+Then open:
+
+```text
+http://localhost:4173/
+```
+
+## Verification
+
+```bash
+node scripts/verify-site.mjs
+```
+
+The verifier checks the longform homepage structure, responsive metadata, champion facts, official source links, visual-system classes, mobile CSS, and updated search data.
+
+## Sources
+
+- Premier League official title confirmation and season summary.
+- Premier League official trophy-lift article.
+- Emirates Stadium image by Huy Phan on Unsplash.
+
+This is a fan-made page and is not affiliated with Arsenal Football Club or the Premier League.
